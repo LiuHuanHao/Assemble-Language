@@ -1,0 +1,67 @@
+任意时刻，SS:SP指向栈顶的元素
+
+push ax: 
+(1)SP=SP-2
+(2)将ax的内容送入SS:SP指向的内存单元
+
+栈为空就相当于栈中唯一的元素出栈，SP=SP+2，SP原来是00EH，加2
+后SP=10H，所以当栈为空时，SS=1000H，SP=10H，此时指向另一个单元
+所以此时也不存在栈顶元素
+
+//*******************************
+问题：
+     (1)将10000H-1000FH这段空间作为栈初始状态是空的
+     (2)设置AX=001AH，BX=001BH
+     (3)将AX、BX中的数据入栈
+     (4)然后将AX、BX清零
+     (5)从栈中返回AX、BX原来的内容
+参考答案:
+      mov ax,1000H
+      mov ss,ax		将栈段地址设置为1000H
+      mov sp,0010H	初始化栈顶，为没有元素时的位置
+      mov ax,001AH     
+      mov bx,001BH      将AX，BX分别赋值
+      push ax
+      push bx           分别将两个数据入栈
+      sub ax,ax     
+      sub bx,bx          将AX，BX清零也可以用 mov ax,0
+			 sun ax,ax的机器码为2字节
+			 mov ax,0 的机器码为3字节
+      pop bx
+      pop ax             先进后出，所以要先pop BX
+
+问题:
+     (1)将10000H-1000FH这段空间当作栈
+     (2)设置AX=002AH，BX=002BH
+     (3)利用栈,交换AX和BX中的数据
+解答:
+      mov ax,1000H
+      mov ss,ax
+      mov sp,0010H       初始化栈顶
+      mov ax,002AH 
+      mov bx,002BH
+      push ax            先进慢出
+      push bx
+      pop ax             最先弹出的是bx的数据，赋值给AX，达到交换数据的效果
+      pop bx
+
+
+ 如果我们要在10001H处写入一行数据2266H，可以用如下代码
+ mov ax,1000H
+ mov ds,ax
+ mov ax,2266H
+ mov [1],ax
+ 如果不能用 "mov 内存单元，寄存器"
+ mov ax,1000H
+ ------------------------
+ mov ss,ax
+ -------------------------
+ mov sp,3
+ ------------------------
+ mov ax,2266H
+ push ax
+
+
+ push和pop指令访问的内存单元地址不是指令给出的
+ 而是由SS:SP指出的，push和mov 指令不同，需要进行两次操作
+ 因为同时需要改变SP。栈顶的变化范围最大是0-fffff
