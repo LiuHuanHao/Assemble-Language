@@ -10,7 +10,7 @@ ds存放的是内存区的段地址，偏移地址为0
 从256字节处后的空间存放的是程序
 
 要使用P命令执行 int 21 结束程序
-程序加载的顺序是:comman加载debug,Debug
+程序加载的顺序是:command加载debug,Debug
 加载exe
 
 返回的顺序是:从exe中的程序返回到Debug
